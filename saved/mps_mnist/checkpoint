@@ -1,0 +1,2 @@
+model_checkpoint_path: "mps_10_20_float64"
+all_model_checkpoint_paths: "mps_10_20_float64"

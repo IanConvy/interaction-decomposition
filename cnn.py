@@ -1,5 +1,4 @@
 import tensorflow as tf
-from skimage import transform
 
 import data
 
@@ -207,7 +206,7 @@ def reduction_module_A(x, filters, kernel_initializer = 'glorot_uniform'):
     a = tf.keras.layers.concatenate([b1, b2, pool])
     return a
 
-def build_inception():
+def build_inception(x_train):
 
     # This function builds the Inception model.
 
@@ -242,22 +241,26 @@ def build_inception():
     model = tf.keras.models.Model(inputs = inputs, outputs = x)
     return model
 
-# The following code trains and then evaluates the Inception model on either
-# MNIST of Fashion MNIST as specified.
+if __name__ == "__main__":
 
-fashion = False
+    # The following code trains and then evaluates the Inception model on either
+    # MNIST of Fashion MNIST as specified.
 
-data_function = data.get_fashion_data if fashion else data.get_mnist_data
-((x_train, y_train), (x_test, y_test)) = data_function(border = False, size = (8, 8))
-x_train = tf.tile(x_train[..., None], (1, 1, 1, 3))
-x_test = tf.tile(x_test[..., None], (1, 1, 1, 3))
+    fashion = False
 
-model = build_inception()
-callbacks = [tf.keras.callbacks.EarlyStopping("val_accuracy", patience = 20, restore_best_weights = True)]
-model.compile(loss = 'categorical_crossentropy', 
-                optimizer = tf.keras.optimizers.Adamax(lr = 0.006, beta_1 = 0.49, beta_2 = 0.999),
-                metrics = ['accuracy'])
-model.fit(x_train, y_train, 64, 1000, validation_split = 1/7, callbacks = callbacks, verbose = 1)
-score = model.evaluate(x_test, y_test, verbose = 0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+    data_function = data.get_fashion_data if fashion else data.get_mnist_data
+    ((x_train, y_train), (x_test, y_test)) = data_function(border = False, size = (8, 8))
+    x_train = tf.reshape(x_train, [-1, 8, 8])
+    x_test = tf.reshape(x_test, [-1, 8, 8])
+    x_train = tf.tile(x_train[..., None], (1, 1, 1, 3))
+    x_test = tf.tile(x_test[..., None], (1, 1, 1, 3))
+
+    model = build_inception(x_train)
+    callbacks = [tf.keras.callbacks.EarlyStopping("val_accuracy", patience = 20, restore_best_weights = True)]
+    model.compile(loss = 'categorical_crossentropy', 
+                    optimizer = tf.keras.optimizers.Adamax(learning_rate = 0.006, beta_1 = 0.49, beta_2 = 0.999),
+                    metrics = ['accuracy'])
+    model.fit(x_train, y_train, 64, 1, validation_split = 1/7, callbacks = callbacks, verbose = 1)
+    score = model.evaluate(x_test, y_test, verbose = 0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
