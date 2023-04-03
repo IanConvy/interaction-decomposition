@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-import data
+from src import data
 
 # This module builds and trains an Inception-like CNN to serve as a comparison
 # to the tensor network models.

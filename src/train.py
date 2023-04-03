@@ -3,9 +3,7 @@ import ast
 
 import tensorflow as tf
 
-import data
-import models
-import factor
+from src import data, models, factor
 
 # This module runs numerical experiments which optimize and evaluate the
 # tensor network regression models.
@@ -40,7 +38,7 @@ def train_model(config, path_modifier = ""):
     print('Test accuracy:', score[1])
 
     if config["save_path"]:
-        save_path = "saved/" + config["save_path"]
+        save_path = "src/saved/" + config["save_path"]
         if path_modifier:
             save_path = save_path + "__" + path_modifier
         if name == "linear":

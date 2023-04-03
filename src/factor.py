@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-import models
+from src import models
 
 def factorize(weights_dir, test_data):
 
